@@ -1,2 +1,3 @@
 gdown
 transformers
+apify_client
