@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import requests
-from apify_client import ApifyClient
+from TweetAPI import TweetAPI
 import logging
 app = Flask(__name__)
 PORT = 5000
@@ -14,23 +14,6 @@ handler = logging.FileHandler(log_file_path)  # Log to the file
 handler.setFormatter(formatter)
 app.logger.addHandler(handler)
 
-# Function to extract text from a Twitter link using Apify
-def extract_text_from_twitter_link(tweet_url):
-    # Initialize the ApifyClient with your API token
-    client = ApifyClient("apify_api_2QGQH8DkI54nayPr5grpIauvPmWqFL3NwQ4M")    
-    
-    run_input = {
-        "startUrls": [{"url": tweet_url}],
-        "tweetsDesired": 1,
-        "addUserInfo": False,
-    }
-
-    run = client.actor("KVJr35xjTw2XyvMeK").call(run_input=run_input)
-
-    # Fetch and return the full_text of the tweet
-    for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-        return item.get("full_text", None)
-
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -43,8 +26,9 @@ def predict_sentiment():
 
             # Check if the input is a Twitter link
             if text_input.startswith('https://twitter.com/') or text_input.startswith('https://x.com/') :
+                tweet_api = TweetAPI(API_KEY = 'apify_api_2QGQH8DkI54nayPr5grpIauvPmWqFL3NwQ4M')
                 # Extract text from the Twitter link
-                tweet_text = extract_text_from_twitter_link(text_input)
+                tweet_text = tweet_api.extract_text_from_twitter_link(text_input)
                 if tweet_text:
                     text_input = tweet_text
                 else:
