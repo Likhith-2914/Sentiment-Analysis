@@ -36,6 +36,8 @@ def predict_sentiment():
 
             # Perform sentiment analysis using the backend API
             response = requests.post("http://backend:6000/", files={'user_text': text_input})
+            # response = requests.post("http://127.0.0.1:6000/", files={'user_text': text_input})
+
 
             label = 'The statement is '
 
